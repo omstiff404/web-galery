@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 10px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-link {
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: transform 0.3s;
+        }
+
+        .admin-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            margin-bottom: 15px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .avatar-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 3px solid #ffd93d;
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.3);
+            transform: rotate(-5deg);
+            transition: all 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 217, 61, 0.5);
+        }
+
+        .online-status {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(45deg, #00b09b, #96c93d);
+            border: 2px solid #1a1a1a;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 176, 155, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 176, 155, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 176, 155, 0);
+            }
+        }
+
+        .user-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .username {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-status {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .tiktok-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+
+        .stat-number {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background: linear-gradient(45deg, #69C9D0, #EE1D52);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        .tiktok-credit {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .tiktok-credit a {
+            color: #69C9D0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .tiktok-credit a:hover {
+            color: #EE1D52;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 1001;
+        }
+
+        .close-modal:hover {
+            color: #ff6b6b;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, #00b09b, #96c93d);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 176, 155, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 176, 155, 0.4);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .share-btn {
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
+        }
+
+        .image-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .image-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .image-size {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+        }
+
+        .error {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+            border-radius: 10px;
+            color: #ff6b6b;
+            margin: 10px 0;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #333;
+            color: #aaa;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-top: 5px;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .accuracy-badge {
+            font-size: 0.6rem;
+            color: #69C9D0;
+            margin-top: 5px;
+        }
+
+        @media (min-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .tiktok-stats {
+                max-width: 400px;
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 1.3rem;
+            }
+
+            .modal-content {
+                max-width: 80%;
+                max-height: 85%;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .gallery {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .modal-content {
+                max-width: 70%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">PixelGallery</div>
+            <a href="admin-login.html" class="admin-link">Admin Panel</a>
+        </header>
+
+        <div class="profile-section">
+            <div class="avatar-container">
+                <img src="/gambar/avatar.jpg" alt="Avatar" class="avatar" id="profileAvatar" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80'">
+                <div class="online-status"></div>
+            </div>
+            <div class="user-info">
+                <div class="username" id="profileUsername">@omstiff404</div>
+                <div class="user-status" id="profileStatus">TikTok Content Creator</div>
+            </div>
+
+            <!-- TikTok Stats dari API FikMyDomains -->
+            <div class="tiktok-stats" id="tiktokStats">
+                <div class="loading">Memuat data TikTok...</div>
+            </div>
+
+            <div class="tiktok-credit">
+                <a href="https://www.tiktok.com/@omstiff404" target="_blank">🌊 TikTok @omstiff404</a>
+                <button class="refresh-btn" onclick="fetchTikTokData()">🔄 Refresh</button>
+                <div class="accuracy-badge">✅ Data Real-time</div>
+            </div>
+        </div>
+
+        <div class="gallery" id="gallery">
+            <!-- Gambar akan dimuat di sini oleh JavaScript -->
+        </div>
+    </div>
+
+    <div id="imageModal" class="image-modal">
+        <span class="close-modal">&times;</span>
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="">
+        </div>
+        <div class="image-info" id="imageInfo">
+            <!-- Info gambar akan dimuat di sini -->
+        </div>
+        <div class="modal-actions">
+            <button class="download-btn" onclick="downloadImage()">
+                <span>⬇️</span> Download Gambar
+            </button>
+            <button class="share-btn" onclick="shareImage()">
+                <span>🔗</span> Share
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // TikTok Configuration
+        const TIKTOK_USERNAME = 'omstiff404';
+        const API_URL = `https://api.fikmydomainsz.xyz/stalk/tiktok?username=${TIKTOK_USERNAME}`;
+        
+        // Variabel global untuk gambar yang sedang dilihat
+        let currentImage = null;
+        let currentImageData = null;
+        
+        // Cache data
+        let tiktokDataCache = null;
+        const CACHE_DURATION = 10 * 60 * 1000; // 10 menit
+
+        // Fungsi untuk mengambil data TikTok dari API FikMyDomains
+        async function fetchTikTokData() {
+            const statsContainer = document.getElementById('tiktokStats');
+            
+            try {
+                statsContainer.innerHTML = '<div class="loading">Memuat data TikTok...</div>';
+                
+                // Cek cache dulu
+                const cached = getCachedTikTokData();
+                if (cached) {
+                    displayTikTokStats(cached);
+                    return;
+                }
+
+                // Fetch data dari API FikMyDomains
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Validasi response
+                if (!data.status || !data.result) {
+                    throw new Error('Data TikTok tidak valid');
+                }
+                
+                const tiktokData = {
+                    followers: data.result.followers || 0,
+                    following: data.result.following || 0,
+                    likes: data.result.likes || 0
+                };
+                
+                // Simpan ke cache
+                cacheTikTokData(tiktokData);
+                displayTikTokStats(tiktokData);
+                
+            } catch (error) {
+                console.error('Error fetching TikTok data:', error);
+                statsContainer.innerHTML = `
+                    <div class="error">
+                        Gagal memuat data TikTok
+                        <br><small>${error.message}</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Cache system
+        function cacheTikTokData(data) {
+            tiktokDataCache = {
+                data: data,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('tiktokCache', JSON.stringify(tiktokDataCache));
+        }
+
+        function getCachedTikTokData() {
+            if (tiktokDataCache && (Date.now() - tiktokDataCache.timestamp) < CACHE_DURATION) {
+                return tiktokDataCache.data;
+            }
+            
+            const stored = localStorage.getItem('tiktokCache');
+            if (stored) {
+                tiktokDataCache = JSON.parse(stored);
+                if ((Date.now() - tiktokDataCache.timestamp) < CACHE_DURATION) {
+                    return tiktokDataCache.data;
+                }
+            }
+            
+            return null;
+        }
+
+        // Fungsi untuk menampilkan stats TikTok (hanya 3 metrics)
+        function displayTikTokStats(data) {
+            const statsContainer = document.getElementById('tiktokStats');
+            
+            statsContainer.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-number">${formatNumber(data.followers)}</div>
+                    <div class="stat-label">Followers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${formatNumber(data.following)}</div>
+                    <div class="stat-label">Following</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${formatNumber(data.likes)}</div>
+                    <div class="stat-label">Likes</div>
+                </div>
+            `;
+        }
+
+        // Format angka (K, M)
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Fungsi untuk memuat gambar dari localStorage
+        function loadGallery() {
+            const gallery = document.getElementById('gallery');
+            const images = JSON.parse(localStorage.getItem('galleryImages')) || [];
+            
+            if (images.length === 0) {
+                gallery.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Gallery Kosong</h3>
+                        <p>Belum ada gambar di direktori /gambar/. Silakan upload melalui panel admin.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            gallery.innerHTML = '';
+            
+            images.forEach((image, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.innerHTML = `
+                    <img src="${image.url}" alt="${image.name}" data-index="${index}">
+                `;
+                gallery.appendChild(galleryItem);
+            });
+            
+            // Tambahkan event listener untuk membuka modal
+            document.querySelectorAll('.gallery-item img').forEach(img => {
+                img.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    openModal(this.src, index);
+                });
+            });
+        }
+
+        // Fungsi untuk membuka modal gambar dengan info
+        function openModal(src, index) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const imageInfo = document.getElementById('imageInfo');
+            
+            const images = JSON.parse(localStorage.getItem('galleryImages')) || [];
+            currentImage = src;
+            currentImageData = images[index];
+            
+            modal.style.display = 'flex';
+            modalImg.src = src;
+            
+            // Tampilkan info gambar
+            if (currentImageData) {
+                const sizeMB = (currentImageData.size / (1024 * 1024)).toFixed(2);
+                imageInfo.innerHTML = `
+                    <div class="image-name">${currentImageData.name}</div>
+                    <div class="image-size">${sizeMB} MB • ${currentImageData.uploadedAt}</div>
+                `;
+            } else {
+                imageInfo.innerHTML = '<div class="image-name">Gambar</div>';
+            }
+        }
+        
+        // Fungsi untuk download gambar
+        function downloadImage() {
+            if (!currentImage) return;
+            
+            const link = document.createElement('a');
+            link.href = currentImage;
+            
+            // Ambil nama file dari data gambar
+            let filename = 'gallery-image.jpg';
+            if (currentImageData && currentImageData.name) {
+                filename = currentImageData.name;
+            }
+            
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Feedback ke user
+            const downloadBtn = document.querySelector('.download-btn');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '<span>✅</span> Terdownload!';
+            downloadBtn.style.background = 'linear-gradient(45deg, #00b09b, #96c93d)';
+            
+            setTimeout(() => {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.style.background = 'linear-gradient(45deg, #00b09b, #96c93d)';
+            }, 2000);
+        }
+        
+        // Fungsi untuk share gambar
+        function shareImage() {
+            if (!currentImage) return;
+            
+            if (navigator.share) {
+                // Web Share API (mobile)
+                navigator.share({
+                    title: 'Check out this image!',
+                    url: currentImage
+                }).catch(console.error);
+            } else {
+                // Fallback untuk desktop - copy link ke clipboard
+                navigator.clipboard.writeText(currentImage).then(() => {
+                    const shareBtn = document.querySelector('.share-btn');
+                    const originalText = shareBtn.innerHTML;
+                    shareBtn.innerHTML = '<span>✅</span> Tersalin!';
+                    shareBtn.style.background = 'linear-gradient(45deg, #6a11cb, #2575fc)';
+                    
+                    setTimeout(() => {
+                        shareBtn.innerHTML = originalText;
+                        shareBtn.style.background = 'linear-gradient(45deg, #6a11cb, #2575fc)';
+                    }, 2000);
+                }).catch(console.error);
+            }
+        }
+        
+        // Fungsi untuk menutup modal
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            currentImage = null;
+            currentImageData = null;
+        }
+        
+        // Event listener untuk menutup modal
+        document.querySelector('.close-modal').addEventListener('click', closeModal);
+        
+        // Event listener untuk menutup modal saat klik di luar gambar
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Fungsi untuk memuat pengaturan profil
+        function loadProfileSettings() {
+            const settings = JSON.parse(localStorage.getItem('profileSettings')) || {
+                username: '@omstiff404',
+                status: 'TikTok Content Creator',
+                avatar: '/gambar/avatar.jpg',
+                borderColor: '#ffd93d'
+            };
+
+            // Terapkan pengaturan
+            document.getElementById('profileUsername').textContent = settings.username;
+            document.getElementById('profileStatus').textContent = settings.status;
+            
+            // Cek apakah avatar custom ada
+            const avatar = document.getElementById('profileAvatar');
+            avatar.src = settings.avatar;
+            avatar.style.borderColor = settings.borderColor;
+        }
+        
+        // Muat gallery, pengaturan profil, dan data TikTok saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGallery();
+            loadProfileSettings();
+            fetchTikTokData();
+            
+            // Auto refresh setiap 15 menit
+            setInterval(fetchTikTokData, 15 * 60 * 1000);
+        });
+    </script>
+</body>
+</html>
