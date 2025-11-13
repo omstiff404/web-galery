@@ -1,0 +1,25 @@
+{
+  "name": "web-gallery",
+  "version": "1.0.0",
+  "description": "Web Gallery with Admin Panel",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "serve -s . -l 3000",
+    "build": "echo 'No build process needed'",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  },
+  "devDependencies": {
+    "vercel": "^28.0.0"
+  },
+  "keywords": [
+    "gallery",
+    "admin",
+    "images"
+  ],
+  "author": "omstiff404",
+  "license": "MIT"
+}
